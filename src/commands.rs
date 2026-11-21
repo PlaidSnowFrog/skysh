@@ -34,6 +34,7 @@ pub fn check_command(input: Vec<String>) {
        _ => {
            match Command::new(input[0].as_str())
                .args(&input[1..])
+               .env("SHELL", env::current_exe().expect("Could not get shell executable path"))
                .output()
            {
                Ok(cmd) => {
