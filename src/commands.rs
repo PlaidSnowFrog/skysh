@@ -8,18 +8,25 @@ pub fn check_command(input: Vec<String>) {
         "cd" => {
             // Check if a directory was provided
             if input.len() >= 2 {
-                env::set_current_dir(&input[1])
-                    .expect("Could not change working directory");
+                if let Err(e) = env::set_current_dir(&input[1]) {
+                    eprintln!("Could not change working directory: {}", e);
+                }
             } else {
-                env::set_current_dir(env::home_dir()
-                    .expect("Could not change to home directory"))
-                    .expect("Could not change working directory");
+                match env::home_dir() {
+                    Some(home) => if let Err(e) = env::set_current_dir(home) {
+                        eprintln!("{}", e);
+                    },
+                    None => eprintln!("HOME not set"),
+                }
             }
         }
         "exit" => {
             // Check if an exit code was provided
             if input.len() >= 2 {
-                exit(input[1].parse::<i32>().unwrap());
+                exit(input[1].parse::<i32>().unwrap_or_else(|_| {
+                    eprintln!("skysh: exit: {}: numeric argument required", input[1]);
+                    2
+                }));
             } else {
                 // exit with code 0
                 exit(0);
