@@ -2,3 +2,7 @@
 name = "skysh"
 version = "0.1.0"
 edition = "2024"
+
+[dependencies]
+crossterm = "0.29.0"
+signal-hook = "0.3.18"
