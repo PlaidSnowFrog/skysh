@@ -32,19 +32,13 @@ pub fn check_command(input: Vec<String>) {
             if not provided");
         }
        _ => {
-           match Command::new(input[0].as_str())
+           match Command::new(&input[0])
                .args(&input[1..])
                .env("SHELL", env::current_exe().expect("Could not get shell executable path"))
-               .output()
+               .status()
            {
-               Ok(cmd) => {
-                   std::io::stdout().write_all(&cmd.stdout).unwrap();
-                   std::io::stdout().write_all(&cmd.stderr).unwrap();
-                   std::io::stdout().flush().unwrap(); // Ensure it prints NOW
-               }
-               Err(e) => {
-                   println!("Could not execute command: {}", e);
-               }
+               Ok(status) => { /* keep status.code() for $? later */ }
+               Err(e) => eprintln!("skysh: {}: {}", input[0], e),
            }
        },
     }
