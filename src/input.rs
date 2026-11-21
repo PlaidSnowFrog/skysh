@@ -1,4 +1,5 @@
-use std::io;
+use std::{env, io};
+use std::fmt::format;
 use std::io::Write;
 
 fn get_user_input() -> String {
@@ -13,7 +14,7 @@ fn tokenize(input: String) -> Vec<String> {
 }
 
 pub fn prompt() -> Vec<String> {
-    print!("> ");
+    print!("{} > ", env::current_dir().unwrap().display());
     io::stdout().flush().unwrap();
 
     let input = get_user_input();
