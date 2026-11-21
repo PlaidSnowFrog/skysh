@@ -1,5 +1,6 @@
 use std::env;
-use std::process::exit;
+use std::os::unix::process::CommandExt;
+use std::process::{exit, Command, Stdio};
 
 pub fn check_command(input: Vec<String>) {
     match input[0].as_str() {
@@ -9,7 +10,9 @@ pub fn check_command(input: Vec<String>) {
                 env::set_current_dir(&input[1])
                     .expect("Could not change working directory");
             } else {
-                panic!("Provide a directory");
+                env::set_current_dir(env::home_dir()
+                    .expect("Could not change to home directory"))
+                    .expect("Could not change working directory");
             }
         }
         "exit" => {
@@ -21,6 +24,19 @@ pub fn check_command(input: Vec<String>) {
                 exit(0);
             }
         }
-       _ => panic!("Unknown command!"),
+        "help" => {
+            println!("Commands:");
+            println!("  cd <directory> | change working directory");
+            println!("  exit <code>    | exit the program with exit code <code> or 0 \
+            if not provided");
+        }
+       _ => {
+           let mut cmd = Command::new(input[0].as_str());
+           cmd.args(input.iter().skip(1));
+           let err = cmd.spawn();
+           if err.is_err() {
+               println!("Not a valid command: {}", err.unwrap_err());
+           }
+       },
     }
 }
