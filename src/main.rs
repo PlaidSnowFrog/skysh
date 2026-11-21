@@ -1,12 +1,13 @@
+use crate::commands::check_command;
 use crate::input::prompt;
 
 pub mod input;
 pub mod commands;
 
 fn main() {
-    let tokens = prompt();
+    loop {
+        let tokens = prompt();
 
-    for token in tokens {
-        println!("{}", token);
+        check_command(tokens);
     }
 }
