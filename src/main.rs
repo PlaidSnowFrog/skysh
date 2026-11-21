@@ -1,3 +1,12 @@
+use crate::input::prompt;
+
+pub mod input;
+pub mod commands;
+
 fn main() {
-    println!("Hello, world!");
+    let tokens = prompt();
+
+    for token in tokens {
+        println!("{}", token);
+    }
 }
