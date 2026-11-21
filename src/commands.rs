@@ -1,4 +1,5 @@
 use std::env;
+use std::io::Write;
 use std::os::unix::process::CommandExt;
 use std::process::{exit, Command, Stdio};
 
@@ -31,11 +32,18 @@ pub fn check_command(input: Vec<String>) {
             if not provided");
         }
        _ => {
-           let mut cmd = Command::new(input[0].as_str());
-           cmd.args(input.iter().skip(1));
-           let err = cmd.spawn();
-           if err.is_err() {
-               println!("Not a valid command: {}", err.unwrap_err());
+           match Command::new(input[0].as_str())
+               .args(&input[1..])
+               .output()
+           {
+               Ok(cmd) => {
+                   std::io::stdout().write_all(&cmd.stdout).unwrap();
+                   std::io::stdout().write_all(&cmd.stderr).unwrap();
+                   std::io::stdout().flush().unwrap(); // Ensure it prints NOW
+               }
+               Err(e) => {
+                   println!("Could not execute command: {}", e);
+               }
            }
        },
     }
